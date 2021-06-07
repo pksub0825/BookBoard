@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="config.mybatis.mapper.oracle.book"> 
+	<sql id="searchWhere">
+		<where>
+			<if test="searchKeyword != null and searchKeyword != ''">
+				${searchCondition} like '%' || #{searchKeyword} || '%'
+			</if>
+		</where>	
+	</sql>
+
+	<insert id="insertBook" parameterType="bookDto">
+		<selectKey keyProperty="no" resultType="int" order="BEFORE">
+			select book_seq.nextval from dual 
+		</selectKey>
+		insert into book(no,title,price,publisher)
+		values(#{no},#{title},#{price},#{publisher})
+	</insert>
+
+	<select id="selectAll" resultType="bookDto">
+		select *
+		from
+		(
+		    select A.*, rownum as RNUM
+		    from
+		    (
+		
+				select no, title, price, publisher, joindate, (sysdate-joindate)*24 as newImgTerm 
+				from book 
+				<include refid="searchWhere" />	  
+				order by no desc
+				 )A
+		)
+		<![CDATA[
+		where RNUM > #{firstRecordIndex} 
+		and RNUM <= #{firstRecordIndex} + #{recordCountPerPage}
+		]]> <!-- '<','>' 인식하지 않게 -->
+	</select>
+	
+	<select id="selectTotalRecord" parameterType="searchVo"
+		resultType="int">
+		select count(*) from book
+		<include refid="searchWhere"></include>
+	</select>
+	
+	<select id="selectByNo" resultType="bookDto">
+		select * from book where no=#{no}
+	</select>
+
+	<update id="updateBook" parameterType="bookDto">
+		update book 
+		set title=#{title}, price=#{price}, publisher=#{publisher} 
+		where no=#{no}
+	</update>
+
+	<delete id="deleteBook" parameterType="bookDto">
+		delete from book where no=#{no}
+	</delete>
+
+
+	<select id="selectMainNotice" resultType="bookDto">
+	select * 
+	from( 
+	   select no, title from book order by no desc 
+	    ) 
+	 <![CDATA[ 
+	where rownum<=6 ]]>
+	</select>
+	
+</mapper>
