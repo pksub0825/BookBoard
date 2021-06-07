@@ -8,7 +8,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>bookList.jsp</title>
+<title>목록 페이지</title>
 <link rel="stylesheet" type="text/css" href="<c:url value='/resources/css/mainstyle.css'/>" />
 <link rel="stylesheet" type="text/css" href="<c:url value='/resources/css/clear.css'/>" />
 <link rel="stylesheet" type="text/css" href="<c:url value='/resources/css/formLayout.css'/>" />
@@ -42,20 +42,19 @@ body {
 
 <form action="<c:url value='/book/bookList.do'/>" 
 	name="frmPage" method="post">
-	<input type="text" name="currentPage">
-	<input type="text" name="searchCondition" 
+	<input type="hidden" name="currentPage">
+	<input type="hidden" name="searchCondition" 
 		value="${param.searchCondition }">
-	<input type="text" name="searchKeyword"
+	<input type="hidden" name="searchKeyword"
 		value="${param.searchKeyword }">	
 </form>
-
-<h2>자유게시판</h2>
+<h2>도서 목록</h2>
 <c:if test="${!empty param.searchKeyword }">
 	<p>검색어 : ${param.searchKeyword}, ${pagingInfo.totalRecord } 
 		건 검색되었습니다.</p>
 </c:if>
 
-	<h2>도서 목록</h2>
+	
 	<div class="divList">
 		<table class="box2">
 			<caption>도서 목록</caption>
